@@ -3,13 +3,10 @@ import networkx as nx
 import pandas as pd
 import psycopg2
 
-df = pd.DataFrame({'name': ['A', 'B', 'C', 'D', 'E'],
-                   'manager': ['Z', 'Z', 'Z', 'X', None],
-                   'join_date': ['10/11/1995', '10/11/1996', '10/11/1997', '10/11/1998', '10/11/1999']})
-
-G = nx.from_pandas_dataframe(df, 'name', 'manager', 'join_date')
-
 app = Flask(__name__)
+
+conn = psycopg2.connect(host="localhost", dbname="testpython",
+                        user="vaibhavs10", password="")
 
 
 @app.route('/shortest_path')

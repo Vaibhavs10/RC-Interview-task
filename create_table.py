@@ -1,7 +1,7 @@
 import psycopg2
 
 conn = psycopg2.connect(host="localhost", dbname="testpython",
-                        user="vaibhavs10", password="v9811045972")
+                        user="vaibhavs10", password="")
 c = conn.cursor()
 c.execute("CREATE TABLE IF NOT EXISTS employees (employee_id INT PRIMARY KEY, dependent_id INT REFERENCES employees);")
 conn.commit()
