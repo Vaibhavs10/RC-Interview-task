@@ -35,8 +35,13 @@ def sub_tree():
 @app.route('/get_edges')
 def edges():
     node = request.args.get('node')
-    data = nx.edges(G, node)
-    return jsonify({'data': data})
+    c = conn.cursor()
+    c.execute("SELECT * FROM employees;")
+    data = c.fetchall()
+    G = nx.Graph()
+    G.add_edges_from(data)
+    edge = nx.edges(G, node)
+    return jsonify({'data': edge})
 
 
 @app.route('/bulk_data_load')
