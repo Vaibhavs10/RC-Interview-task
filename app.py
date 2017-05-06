@@ -20,7 +20,10 @@ def shortest_path():
 @app.route('/get_sub_tree')
 def sub_tree():
     node = request.args.get('node')
-    data = G[node]
+    c = conn.cursor()
+    c.execute("WITH RECURSIVE traverse AS (SELECT employee_id FROM employees WHERE dependent_id = %s UNION ALL SELECT employees.employee_id FROM employees INNER JOIN traverse ON employees.dependent_id = traverse.employee_id) SELECT employee_id FROM traverse;",(node,))
+    data = c.fetchall()
+    c.close()
     return jsonify({'data': data})
 
 
