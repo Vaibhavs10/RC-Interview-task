@@ -13,8 +13,13 @@ conn = psycopg2.connect(host="localhost", dbname="testpython",
 def shortest_path():
     source = request.args.get('source')
     target = request.args.get('target')
-    data = nx.shortest_path(G, source=source, target=target)
-    return jsonify({'data': data})
+    c = conn.cursor()
+    c.execute("SELECT * FROM employees;")
+    data = c.fetchall()
+    G = nx.Graph()
+    G.add_edges_from(data)
+    path = nx.shortest_path(G, source=source, target=target)
+    return jsonify({'data': path})
 
 
 @app.route('/get_sub_tree')
