@@ -1,4 +1,4 @@
-from flask import Flask, render_template, jsonify, request
+from flask import Flask, jsonify, request
 import networkx as nx
 import pandas as pd
 import psycopg2
@@ -7,6 +7,11 @@ app = Flask(__name__)
 
 conn = psycopg2.connect(host="localhost", dbname="testpython",
                         user="vaibhavs10", password="")
+
+x = {}
+x['relations'] = [(1, 2), (2, 3), (3, 4)]
+x['values'] = [(1, "22/11/2014"), (2, "30/02/2016"),
+               (3, "12/04/1993"), (4, "10/11/1995")]
 
 
 @app.route('/shortest_path')
@@ -52,6 +57,16 @@ def get_tree():
     c.close()
     return jsonify({'data': data})
 
+
+@app.route('/parse_JSON_dump')
+def JSON_dump():
+    c = conn.cursor()
+    for relation in x['relations']:
+        c.execute("INSERT INTO employees VALUES %s", (relation,))
+    for value in x['values']:
+        c.execute("INSERT INTO employee_detail VALUES %s", (value,))
+    c.close()
+    return jsonify({"data": "Done!"})
 
 if __name__ == "__main__":
     app.run(debug=True)
