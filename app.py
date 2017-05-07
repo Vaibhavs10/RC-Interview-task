@@ -26,7 +26,7 @@ def shortest_path():
 def sub_tree():
     node = request.args.get('node')
     c = conn.cursor()
-    c.execute("WITH RECURSIVE traverse AS (SELECT employee_id FROM employees WHERE dependent_id = %s UNION ALL SELECT employees.employee_id FROM employees INNER JOIN traverse ON employees.dependent_id = traverse.employee_id) SELECT employee_id FROM traverse;",(node,))
+    c.execute("WITH RECURSIVE traverse AS (SELECT employee_id FROM employees WHERE dependent_id = %s UNION ALL SELECT employees.employee_id FROM employees INNER JOIN traverse ON employees.dependent_id = traverse.employee_id) SELECT employee_id FROM traverse;", (node,))
     data = c.fetchall()
     c.close()
     return jsonify({'data': data})
@@ -44,11 +44,13 @@ def edges():
     return jsonify({'data': edge})
 
 
-@app.route('/bulk_data_load')
-def bulk_data_load():
-    data = pd.read_csv('test.csv')
-    source = request.args.get('source')
-    G = nx.from_pandas_dataframe(data, source, )
+@app.route('/get_tree')
+def get_tree():
+    c = conn.cursor()
+    c.execute("WITH RECURSIVE traverse(employee_id, depth) AS ( SELECT employee_id, 1 FROM employees WHERE dependent_id IS NULL UNION ALL SELECT employees.employee_id, traverse.depth + 1 FROM employees INNER JOIN traverse ON employees.dependent_id = traverse.employee_id) SELECT employee_id FROM traverse ORDER BY depth DESC;")
+    data = c.fetchall()
+    c.close()
+    return jsonify({'data': data})
 
 
 if __name__ == "__main__":
